@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import PrimaryButton from './PrimaryButton.svelte';
-  import { currentUser } from '$lib/stores';
+	import { goto } from '$app/navigation';
+	import PrimaryButton from './PrimaryButton.svelte';
+	import { currentUser } from '$lib/stores';
 </script>
 
 <div>
-  {#if $currentUser}
-    <div class="py-4 text-center">Signed in as {$currentUser.name}</div>
-    <div class="flex flex-col">
-      <PrimaryButton on:click={() => goto('/logout')}>Sign out</PrimaryButton>
-    </div>
-  {/if}
+	{#if $currentUser}
+		<div class="py-4 text-center">Signed in as {$currentUser.name}</div>
+		<div class="flex flex-col">
+			<PrimaryButton on:click={() => goto('/logout')}>Sign out</PrimaryButton>
+		</div>
+	{/if}
 </div>

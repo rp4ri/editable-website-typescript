@@ -29,5 +29,11 @@ export default ts.config(
 	},
 	{
 		ignores: ['build/', '.svelte-kit/', 'dist/']
+	},
+	{
+		files: ['src/lib/components/ui/**/*.svelte'],
+		rules: {
+			'@typescript-eslint/no-unused-vars': 'off'
+		}
 	}
 );
