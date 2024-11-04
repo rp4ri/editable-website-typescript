@@ -1,6 +1,6 @@
-# sv
+# editable-website-typescript
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Adaptation of the [editable-website](https://github.com/michael/editable-website) repository to a familiar tech stack. This version has been refactored to use Svelte v5, TypeScript, Shadcn-Svelte, PNPM, and Drizzle. Turso was used for local development for ease of use, with plans to migrate components to Svelte with runes where applicable.
 
 ## Creating a project
 
