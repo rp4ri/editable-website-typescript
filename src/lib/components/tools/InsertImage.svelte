@@ -1,20 +1,25 @@
-<script>
+<script lang="ts">
   import { classNames, resizeImage, getDimensions, nanoid, is_safari } from '$lib/utils';
   import uploadAsset from '$lib/uploadAsset';
   import { insertImage } from '$lib/editor/prosemirrorCommands';
   import { currentUser } from '$lib/stores';
+	import type { EditorView } from 'prosemirror-view';
+  import type { EditorState } from 'prosemirror-state';
 
-  export let editorView;
-  export let editorState;
+  export let editorView: EditorView;
+  export let editorState: EditorState;
 
-  let fileInput; // for uploading an image
-  let progress = undefined; // file upload progress
+  let fileInput: HTMLInputElement | null = null; // for uploading an image
+  let progress: number | undefined = undefined; // file upload progress
 
   $: schema = editorState.schema;
-  $: disabled = !insertImage(editorState, null, editorView);
+  $: disabled = !insertImage(editorState);
 
-  async function uploadImage() {
-    const file = fileInput.files[0];
+  async function uploadImage(): Promise<void> {
+    if (!fileInput) return;
+
+    const file = fileInput.files?.[0];
+    if (!file) return;
 
     // We convert all uploads to the WEBP image format
     const content_type = is_safari() ? 'image/jpeg' : 'image/webp';
@@ -38,27 +43,38 @@
     progress = 0;
     try {
       if ($currentUser) {
-        await uploadAsset(resizedFile, path, p => {
+        await uploadAsset(resizedFile, path, (p: number) => {
           progress = p;
         });
       }
 
-      editorView.dispatch(
-        editorState.tr.replaceSelectionWith(
-          schema.nodes.image.createAndFill({
-            src,
-            width,
-            height
-          })
-        )
-      );
+      const imageNode = schema.nodes.image.createAndFill({
+        src,
+        width,
+        height
+      });
+
+      if (imageNode) {
+        editorView.dispatch(
+          editorState.tr.replaceSelectionWith(imageNode)
+        );
+      }
       editorView.focus();
       progress = undefined;
     } catch (err) {
       console.error(err);
       progress = undefined;
     }
-    fileInput.value = null;
+
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  }
+
+  function handleClick(): void {
+    if (fileInput) {
+      fileInput.click();
+    }
   }
 </script>
 
@@ -72,7 +88,7 @@
   on:change={uploadImage}
 />
 <button
-  on:click={() => fileInput.click()}
+  on:click={handleClick}
   {disabled}
   class={classNames('hover:bg-gray-100 sm:mx-1 rounded-full p-2 disabled:opacity-30')}
 >

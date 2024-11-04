@@ -86,13 +86,17 @@ export function formatDate(dateString: string, withTime: boolean): string {
 // 		},
 // 	};
 // }
-export function debounce(node: HTMLElement, params: { func: () => void; duration: number }) {
+export function debounce<T>(node: HTMLElement, params: { value: T; func: () => void; duration: number }) {
     let timer: ReturnType<typeof setTimeout>;
 
     return {
-        update() {
-            clearTimeout(timer);
-            timer = setTimeout(params.func, params.duration);
+        update(newParams: { value: T; func: () => void; duration: number }) {
+            // Solo ejecutar el debounce si el valor ha cambiado
+            if (newParams.value !== params.value) {
+                clearTimeout(timer);
+                timer = setTimeout(newParams.func, newParams.duration);
+            }
+            params = newParams;
         },
         destroy() {
             clearTimeout(timer);

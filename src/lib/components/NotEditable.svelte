@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { classNames } from '$lib/utils';
   import { isEditing } from '$lib/stores';
 </script>

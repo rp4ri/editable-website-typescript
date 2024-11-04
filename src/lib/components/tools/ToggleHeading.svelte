@@ -1,10 +1,13 @@
-<script>
+<script lang="ts">
   import { classNames } from '$lib/utils';
   import { setBlockType } from 'prosemirror-commands';
   import { blockTypeActive } from '$lib/editor/prosemirrorUtil';
 
-  export let editorView;
-  export let editorState;
+  import type { EditorView } from 'prosemirror-view';
+  import type { EditorState } from 'prosemirror-state';
+
+  export let editorView: EditorView;
+  export let editorState: EditorState;
 
   $: schema = editorState.schema;
   $: disabled =

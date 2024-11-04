@@ -1,17 +1,20 @@
-<script>
+<script lang="ts">
   import { toggleMark } from 'prosemirror-commands';
   import { markActive } from '$lib/editor/prosemirrorUtil';
   import { classNames } from '$lib/utils';
 
-  export let editorView;
-  export let editorState;
+  import type { EditorView } from 'prosemirror-view';
+  import type { EditorState } from 'prosemirror-state';
+
+  export let editorView: EditorView;
+  export let editorState: EditorState;
   export let type;
 
   $: schema = editorState.schema;
   $: markType = schema.marks[type];
 
   $: command = toggleMark(markType);
-  $: disabled = !markType || !command(editorState, null);
+  $: disabled = !markType || !command(editorState, undefined);
   $: active = markActive(markType)(editorState);
 
   function handleClick() {

@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import { classNames } from '$lib/utils';
-  export let styles;
-  export let size = 'default';
-  export let type = 'button';
-  export let href = undefined;
+  export let styles: string;
+  export let size: 'sm' | 'default' | 'lg' = 'default';
+  export let type: 'button' | 'submit' | 'reset' | null = 'button';
+  export let href: string | undefined;
   export let disabled = false;
   const STYLE_SHARED =
     'm-0 p-0 disabled:cursor-not-allowed disabled:opacity-50 rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 font-sans no-underline text-center';
@@ -16,7 +16,7 @@
 </script>
 
 {#if href}
-  <a {href} class={className} {disabled}>
+  <a {href} class={className}>
     <slot />
   </a>
 {:else}

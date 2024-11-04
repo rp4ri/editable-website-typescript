@@ -4,12 +4,13 @@
   import NotEditable from '$lib/components/NotEditable.svelte';
   import Search from '$lib/components/Search.svelte';
   import { isEditing, currentUser } from '$lib/stores';
+  import type { Writable } from 'svelte/store';
 
   // TODO: Replace with a globally managed context menu implementation (only one active)
-  export let showUserMenu = undefined;
-  export let showSearch = undefined;
+  export let showUserMenu: boolean | undefined = undefined;
+  export let showSearch: boolean | undefined = undefined;
 
-  function onKeyDown(e) {
+  function onKeyDown(e: KeyboardEvent): void {
     // Close modals
     if (e.key === 'Escape') {
       showSearch = false;
@@ -42,11 +43,12 @@
   <div class="max-w-xs mx-auto py-4">
     <NotEditable>
       <div class="flex items-center relative">
-        <div class="flex-1" />
+        <div class="flex-1" ></div>
         <button
           title="Search"
           class={classNames('mr-6 hover:text-black')}
           on:click={() => (showSearch = true)}
+          aria-label="Search"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -68,12 +70,13 @@
         <a class="mr-4 font-medium px-2 py-1 rounded-md hover:text-black" href="/#contact">
           Contact
         </a>
-        <div class="flex-1" />
+        <div class="flex-1" ></div>
         {#if $currentUser}
           <button
             on:click={() => (showUserMenu = !showUserMenu)}
             class="ml-0 hover:text-black"
             title={$currentUser.name}
+            aria-label="User menu"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +94,7 @@
             </svg>
           </button>
         {/if}
-        <div class="flex-1" />
+        <div class="flex-1" ></div>
       </div>
     </NotEditable>
   </div>

@@ -1,13 +1,16 @@
-<script>
+<script lang="ts">
   import { classNames } from '$lib/utils';
   import { toggleMark } from 'prosemirror-commands';
   import { createLink } from '$lib/editor/prosemirrorCommands';
-
-  export let editorView;
-  export let editorState;
+  
+  import type { EditorView } from 'prosemirror-view';
+  import type { EditorState } from 'prosemirror-state';
+  
+  export let editorView: EditorView;
+  export let editorState: EditorState;
 
   $: schema = editorState.schema;
-  $: disabled = !createLink(editorState, null, editorView);
+  $: disabled = !createLink(editorState);
 
   function handleClick() {
     let url = prompt('Enter link URL', 'https://example.com');

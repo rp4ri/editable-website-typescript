@@ -25,7 +25,7 @@
         <Input type="password" name="password" id="password" />
       </div>
       <Button type="submit">Login</Button>
-      <div><a class="underline" href="/">Return to the homepage</a></div>
+      <div><a class="underline" href="/home">Return to the homepage</a></div>
     </form>
   </div>
 </Limiter>

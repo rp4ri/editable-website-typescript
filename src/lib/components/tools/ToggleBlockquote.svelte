@@ -1,9 +1,12 @@
-<script>
+<script lang="ts">
   import { classNames } from '$lib/utils';
   import { wrapIn } from 'prosemirror-commands';
 
-  export let editorView;
-  export let editorState;
+  import type { EditorView } from 'prosemirror-view';
+  import type { EditorState } from 'prosemirror-state';
+
+  export let editorView: EditorView;
+  export let editorState: EditorState;
 
   $: schema = editorState.schema;
   $: disabled = !wrapIn(schema.nodes.blockquote)(editorView.state);

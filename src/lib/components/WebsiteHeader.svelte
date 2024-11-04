@@ -4,8 +4,8 @@
   import EditorToolbar from '$lib/components/tools/EditorToolbar.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  export let showUserMenu = false;
-  const dispatch = createEventDispatcher();
+  export let showUserMenu: boolean = false;
+  const dispatch = createEventDispatcher<{ cancel: void; save: void }>();
 </script>
 
 <EditorToolbar on:cancel={() => dispatch('cancel')} on:save={() => dispatch('save')} />

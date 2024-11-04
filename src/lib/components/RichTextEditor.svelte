@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount, onDestroy } from 'svelte';
   import { toHTML, fromHTML } from '$lib/editor/prosemirrorUtil';
   import {
@@ -13,11 +13,15 @@
   import { baseKeymap } from 'prosemirror-commands';
   import { buildKeymap } from '$lib/editor/prosemirrorKeymap';
   import { buildInputRules } from '$lib/editor/prosemirrorInputrules';
+  
+  import type { Transaction } from 'prosemirror-state';
 
-  export let content = '<p>Enter text.</p>';
-  export let multiLine = false;
+  export let content: string = '<p>Enter text.</p>';
+  export let multiLine: boolean = false;
   let editorChange = false;
-  let prosemirrorNode, editorView, editorState;
+  let prosemirrorNode: HTMLElement;
+  let editorView: EditorView | undefined;
+  let editorState: EditorState;
 
   $: schema = multiLine ? multiLineRichTextSchema : singleLineRichTextSchema;
   $: {
@@ -42,7 +46,7 @@
     }
   }
 
-  function dispatchTransaction(transaction) {
+  function dispatchTransaction(this: EditorView, transaction: Transaction) {
     const editorState = this.state.apply(transaction);
     this.updateState(editorState);
     if (transaction.docChanged) {
@@ -79,7 +83,7 @@
   });
 </script>
 
-<div id="prosemirror-editor" bind:this={prosemirrorNode} />
+<div id="prosemirror-editor" bind:this={prosemirrorNode} ></div>
 
 <style>
   :global(#prosemirror-editor .ProseMirror) {

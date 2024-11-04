@@ -1,14 +1,14 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   import { fetchJSON } from '$lib/utils';
   import NotEditable from '$lib/components/NotEditable.svelte';
 
-  export let counter;
-  let count;
+  export let counter: string | undefined;
+  let count: number | undefined;
 
   onMount(async () => {
     if (counter) {
-      const result = await fetchJSON('GET', `/api/counter?c=${counter}`);
+      const result: { count: number } = await fetchJSON('GET', `/api/counter?c=${counter}`);
       count = result.count;
     }
   });
@@ -22,7 +22,7 @@
       <a href="/#contact">Contact</a>
       <a href="/imprint">Imprint</a>
       {#if count}
-        <div class="flex-1" />
+        <div class="flex-1" ></div>
         <div class="text-xs font-normal flex items-center space-x-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"

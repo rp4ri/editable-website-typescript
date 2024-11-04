@@ -8,8 +8,8 @@
   let value: string;
   let result = SHORTCUTS;
   let selectedResult = 0;
-  let input;
-  let resultsEl;
+  let input: HTMLInputElement;
+  let resultsEl: HTMLElement;
 
   onMount(() => {
     input.focus();
@@ -47,24 +47,28 @@
     scrollIntoViewIfNeeded();
   }
 
-  function scrollIntoViewIfNeeded() {
-    let node = resultsEl.childNodes[selectedResult];
-    if (node.scrollIntoViewIfNeeded) {
-      node.scrollIntoViewIfNeeded();
+  function scrollIntoViewIfNeeded(): void {
+    let node = resultsEl?.childNodes[selectedResult] as HTMLElement;
+    if (node) {
+      if ('scrollIntoViewIfNeeded' in node) {
+        (node as any).scrollIntoViewIfNeeded();
+      } else {
+        node.scrollIntoView({ block: 'nearest' });
+      }
     }
   }
 
-  function onKeyDown(e) {
-    switch (e.keyCode) {
-      case 38: // up
+  function onKeyDown(e: KeyboardEvent): void {
+    switch (e.code) {
+      case 'ArrowUp':
         prevResult();
         e.preventDefault();
         break;
-      case 40: // down
+      case 'ArrowDown':
         nextResult();
         e.preventDefault();
         break;
-      case 13:
+      case 'Enter':
         navigate();
         break;
     }
