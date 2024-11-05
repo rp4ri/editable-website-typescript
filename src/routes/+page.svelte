@@ -10,6 +10,7 @@
     import WebsiteHeader from '$lib/components/WebsiteHeader.svelte';
     import Footer from '$lib/components/Footer.svelte';
     import Testimonial from '$lib/components/Testimonial.svelte';
+    import Image from '$lib/components/image-editor/Image.svelte';
 
     import * as Avatar from "$lib/components/ui/avatar/index.js";
 
@@ -285,10 +286,14 @@
     <div class="max-w-screen-md mx-auto px-6">
       <div class="pt-12 sm:pt-24 pb-12 text-center">
         <div class="w-48 h-48 md:w-72 md:h-72 mx-auto overflow-hidden relative rounded-full">
-            <Avatar.Root class="w-48 h-48 md:w-72 md:h-72 rounded-full">
-                <Avatar.Image src="https://github.com/shadcn.png" alt="@shadcn" />
-                <Avatar.Fallback>CN</Avatar.Fallback>
-            </Avatar.Root>
+            <Image
+                class="block w-48 h-48 md:w-72 md:h-72 rounded-full"
+                maxWidth={384}
+                maxHeight={384}
+                quality={0.8}
+                bind:src={bioPicture}
+                alt="Michael Aufreiter"
+            />
         </div>
   
       </div>

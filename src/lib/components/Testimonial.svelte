@@ -3,6 +3,7 @@
   import { classNames } from '$lib/utils';
   import { createEventDispatcher } from 'svelte';
   import { isEditing } from '$lib/stores';
+  import Image from '$lib/components/image-editor/Image.svelte';
 
   import * as Avatar from '$lib/components/ui/avatar';
 
@@ -16,10 +17,14 @@
 <div class={classNames(firstEntry ? 'pt-2 pb-8 sm:pb-12' : 'py-8 sm:py-12')}>
   <div class="max-w-screen-md mx-auto px-6 flex space-x-6 sm:space-x-8 relative">
     <div class="flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 overflow-hidden relative rounded-full">
-      <Avatar.Root class="rounded-full w-14 h-14 sm:w-20 sm:h-20">
-          <Avatar.Image src={testimonial.image || 'https://github.com/shadcn.png'} alt={testimonial.name || "@shadcn"} />
-          <Avatar.Fallback>{testimonial.name.charAt(0) || 'CN'}</Avatar.Fallback>
-      </Avatar.Root>
+      <Image
+        class="rounded-full"
+        maxWidth={160}
+        maxHeight={160}
+        quality={0.8}
+        bind:src={testimonial.image}
+        alt={testimonial.name}
+      />
     </div>
     <div class="flex-1">
       <div class="text-lg sm:text-2xl italic">
