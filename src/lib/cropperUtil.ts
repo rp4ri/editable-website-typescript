@@ -1,6 +1,6 @@
-/** 
+/**
  * Adapted from svelte-easy-crop
- * https://github.com/ValentinH/svelte-easy-crop 
+ * https://github.com/ValentinH/svelte-easy-crop
  */
 
 /**
@@ -10,20 +10,20 @@
  * @param aspect aspect ratio of the crop
  */
 export function getCropSize(
-  imgWidth: number,
-  imgHeight: number,
-  aspect: number
+	imgWidth: number,
+	imgHeight: number,
+	aspect: number
 ): { width: number; height: number } {
-  if (imgWidth >= imgHeight * aspect) {
-    return {
-      width: imgHeight * aspect,
-      height: imgHeight
-    };
-  }
-  return {
-    width: imgWidth,
-    height: imgWidth / aspect
-  };
+	if (imgWidth >= imgHeight * aspect) {
+		return {
+			width: imgHeight * aspect,
+			height: imgHeight
+		};
+	}
+	return {
+		width: imgWidth,
+		height: imgWidth / aspect
+	};
 }
 
 /**
@@ -35,29 +35,32 @@ export function getCropSize(
  * @returns
  */
 export function restrictPosition(
-  position: { x: number; y: number },
-  imageSize: { width: number; height: number },
-  cropSize: { width: number; height: number },
-  zoom: number
+	position: { x: number; y: number },
+	imageSize: { width: number; height: number },
+	cropSize: { width: number; height: number },
+	zoom: number
 ): { x: number; y: number } {
-  return {
-    x: restrictPositionCoord(position.x, imageSize.width, cropSize.width, zoom),
-    y: restrictPositionCoord(position.y, imageSize.height, cropSize.height, zoom)
-  };
+	return {
+		x: restrictPositionCoord(position.x, imageSize.width, cropSize.width, zoom),
+		y: restrictPositionCoord(position.y, imageSize.height, cropSize.height, zoom)
+	};
 }
 
 function restrictPositionCoord(
-  position: number,
-  imageSize: number,
-  cropSize: number,
-  zoom: number
+	position: number,
+	imageSize: number,
+	cropSize: number,
+	zoom: number
 ) {
-  const maxPosition = (imageSize * zoom) / 2 - cropSize / 2;
-  return Math.min(maxPosition, Math.max(position, -maxPosition));
+	const maxPosition = (imageSize * zoom) / 2 - cropSize / 2;
+	return Math.min(maxPosition, Math.max(position, -maxPosition));
 }
 
-export function getDistanceBetweenPoints(pointA: { x: number; y: number }, pointB: { x: number; y: number }) {
-  return Math.sqrt(Math.pow(pointA.y - pointB.y, 2) + Math.pow(pointA.x - pointB.x, 2));
+export function getDistanceBetweenPoints(
+	pointA: { x: number; y: number },
+	pointB: { x: number; y: number }
+) {
+	return Math.sqrt(Math.pow(pointA.y - pointB.y, 2) + Math.pow(pointA.x - pointB.x, 2));
 }
 
 /**
@@ -71,67 +74,70 @@ export function getDistanceBetweenPoints(pointA: { x: number; y: number }, point
  * @param restrictPosition whether we should limit or not the cropped area
  */
 export function computeCroppedArea(
-  crop: { x: number; y: number },
-  imgSize: { width: number; height: number; naturalWidth: number; naturalHeight: number },
-  cropSize: { width: number; height: number },
-  aspect: number,
-  zoom: number,
-  restrictPosition = true
-): { croppedAreaPercentages: { x: number; y: number; width: number; height: number }; croppedAreaPixels: { x: number; y: number; width: number; height: number } } {
-  const limitAreaFn = restrictPosition ? limitArea : noOp;
-  const croppedAreaPercentages = {
-    x: limitAreaFn(
-      100,
-      (((imgSize.width - cropSize.width / zoom) / 2 - crop.x / zoom) / imgSize.width) * 100
-    ),
-    y: limitAreaFn(
-      100,
-      (((imgSize.height - cropSize.height / zoom) / 2 - crop.y / zoom) / imgSize.height) * 100
-    ),
-    width: limitAreaFn(100, ((cropSize.width / imgSize.width) * 100) / zoom),
-    height: limitAreaFn(100, ((cropSize.height / imgSize.height) * 100) / zoom)
-  };
+	crop: { x: number; y: number },
+	imgSize: { width: number; height: number; naturalWidth: number; naturalHeight: number },
+	cropSize: { width: number; height: number },
+	aspect: number,
+	zoom: number,
+	restrictPosition = true
+): {
+	croppedAreaPercentages: { x: number; y: number; width: number; height: number };
+	croppedAreaPixels: { x: number; y: number; width: number; height: number };
+} {
+	const limitAreaFn = restrictPosition ? limitArea : noOp;
+	const croppedAreaPercentages = {
+		x: limitAreaFn(
+			100,
+			(((imgSize.width - cropSize.width / zoom) / 2 - crop.x / zoom) / imgSize.width) * 100
+		),
+		y: limitAreaFn(
+			100,
+			(((imgSize.height - cropSize.height / zoom) / 2 - crop.y / zoom) / imgSize.height) * 100
+		),
+		width: limitAreaFn(100, ((cropSize.width / imgSize.width) * 100) / zoom),
+		height: limitAreaFn(100, ((cropSize.height / imgSize.height) * 100) / zoom)
+	};
 
-  // we compute the pixels size naively
-  const widthInPixels = limitAreaFn(
-    imgSize.naturalWidth,
-    (croppedAreaPercentages.width * imgSize.naturalWidth) / 100,
-    true
-  );
-  const heightInPixels = limitAreaFn(
-    imgSize.naturalHeight,
-    (croppedAreaPercentages.height * imgSize.naturalHeight) / 100,
-    true
-  );
-  const isImgWiderThanHigh = imgSize.naturalWidth >= imgSize.naturalHeight * aspect;
+	// we compute the pixels size naively
+	const widthInPixels = limitAreaFn(
+		imgSize.naturalWidth,
+		(croppedAreaPercentages.width * imgSize.naturalWidth) / 100,
+		true
+	);
+	const heightInPixels = limitAreaFn(
+		imgSize.naturalHeight,
+		(croppedAreaPercentages.height * imgSize.naturalHeight) / 100,
+		true
+	);
+	const isImgWiderThanHigh = imgSize.naturalWidth >= imgSize.naturalHeight * aspect;
 
-  // then we ensure the width and height exactly match the aspect (to avoid rounding approximations)
-  // if the image is wider than high, when zoom is 0, the crop height will be equals to iamge height
-  // thus we want to compute the width from the height and aspect for accuracy.
-  // Otherwise, we compute the height from width and aspect.
-  const sizePixels = isImgWiderThanHigh
-    ? {
-        width: Math.round(heightInPixels * aspect),
-        height: heightInPixels
-      }
-    : {
-        width: widthInPixels,
-        height: Math.round(widthInPixels / aspect)
-      };
-  const croppedAreaPixels = {
-    ...sizePixels,
-    x: limitAreaFn(
-      imgSize.naturalWidth - sizePixels.width,
-      (croppedAreaPercentages.x * imgSize.naturalWidth) / 100,
-      true
-    ),
-    y: limitAreaFn(
-      imgSize.naturalHeight - sizePixels.height,
-      (croppedAreaPercentages.y * imgSize.naturalHeight) / 100,
-      true
-    )
-  };
-  return { croppedAreaPercentages, croppedAreaPixels };
+	// then we ensure the width and height exactly match the aspect (to avoid rounding approximations)
+	// if the image is wider than high, when zoom is 0, the crop height will be equals to iamge height
+	// thus we want to compute the width from the height and aspect for accuracy.
+	// Otherwise, we compute the height from width and aspect.
+	const sizePixels = isImgWiderThanHigh
+		? {
+				width: Math.round(heightInPixels * aspect),
+				height: heightInPixels
+			}
+		: {
+				width: widthInPixels,
+				height: Math.round(widthInPixels / aspect)
+			};
+	const croppedAreaPixels = {
+		...sizePixels,
+		x: limitAreaFn(
+			imgSize.naturalWidth - sizePixels.width,
+			(croppedAreaPercentages.x * imgSize.naturalWidth) / 100,
+			true
+		),
+		y: limitAreaFn(
+			imgSize.naturalHeight - sizePixels.height,
+			(croppedAreaPercentages.y * imgSize.naturalHeight) / 100,
+			true
+		)
+	};
+	return { croppedAreaPercentages, croppedAreaPixels };
 }
 
 /**
@@ -141,12 +147,12 @@ export function computeCroppedArea(
  * @param shouldRound
  */
 function limitArea(max: number, value: number, shouldRound = false): number {
-  const v = shouldRound ? Math.round(value) : value;
-  return Math.min(max, Math.max(0, v));
+	const v = shouldRound ? Math.round(value) : value;
+	return Math.min(max, Math.max(0, v));
 }
 
 function noOp(max: number, value: number): number {
-  return value;
+	return value;
 }
 
 /**
@@ -154,92 +160,99 @@ function noOp(max: number, value: number): number {
  * @param a
  * @param b
  */
-export function getCenter(a: { x: number; y: number }, b: { x: number; y: number }): { x: number; y: number } {
-  return {
-    x: (b.x + a.x) / 2,
-    y: (b.y + a.y) / 2
-  };
+export function getCenter(
+	a: { x: number; y: number },
+	b: { x: number; y: number }
+): { x: number; y: number } {
+	return {
+		x: (b.x + a.x) / 2,
+		y: (b.y + a.y) / 2
+	};
 }
 
 export const createImage = (url: string): Promise<HTMLImageElement> =>
-  new Promise((resolve, reject) => {
-    const image = new Image();
-    image.addEventListener('load', () => resolve(image));
-    image.addEventListener('error', error => reject(error));
-    image.setAttribute('crossOrigin', 'anonymous'); // needed to avoid cross-origin issues on CodeSandbox
-    image.src = url;
-  });
+	new Promise((resolve, reject) => {
+		const image = new Image();
+		image.addEventListener('load', () => resolve(image));
+		image.addEventListener('error', (error) => reject(error));
+		image.setAttribute('crossOrigin', 'anonymous'); // needed to avoid cross-origin issues on CodeSandbox
+		image.src = url;
+	});
 
 export function getRadianAngle(degreeValue: number): number {
-  return (degreeValue * Math.PI) / 180;
+	return (degreeValue * Math.PI) / 180;
 }
 
 /**
  * Returns the new bounding area of a rotated rectangle.
  */
-export function rotateSize(width: number, height: number, rotation: number): { width: number; height: number } {
-  const rotRad = getRadianAngle(rotation);
+export function rotateSize(
+	width: number,
+	height: number,
+	rotation: number
+): { width: number; height: number } {
+	const rotRad = getRadianAngle(rotation);
 
-  return {
-    width: Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
-    height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height)
-  };
+	return {
+		width: Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
+		height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height)
+	};
 }
 
 /**
  * This function was adapted from the one in the ReadMe of https://github.com/DominicTobias/react-image-crop
  */
 export async function getCroppedImg(
-  imageSrc: string,
-  pixelCrop: { x: number; y: number; width: number; height: number },
-  rotation = 0,
-  flip = { horizontal: false, vertical: false }
+	imageSrc: string,
+	pixelCrop: { x: number; y: number; width: number; height: number },
+	rotation = 0,
+	flip = { horizontal: false, vertical: false }
 ): Promise<Blob | null> {
-  const image = await createImage(imageSrc);
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+	const image = await createImage(imageSrc);
+	const canvas = document.createElement('canvas');
+	const ctx = canvas.getContext('2d');
 
-  if (!ctx) {
-    return null;
-  }
+	if (!ctx) {
+		return null;
+	}
 
-  const rotRad = getRadianAngle(rotation);
+	const rotRad = getRadianAngle(rotation);
 
-  // calculate bounding box of the rotated image
-  const { width: bBoxWidth, height: bBoxHeight } = rotateSize(image.width, image.height, rotation);
+	// calculate bounding box of the rotated image
+	const { width: bBoxWidth, height: bBoxHeight } = rotateSize(image.width, image.height, rotation);
 
-  // set canvas size to match the bounding box
-  canvas.width = bBoxWidth;
-  canvas.height = bBoxHeight;
+	// set canvas size to match the bounding box
+	canvas.width = bBoxWidth;
+	canvas.height = bBoxHeight;
 
-  // translate canvas context to a central location to allow rotating and flipping around the center
-  ctx.translate(bBoxWidth / 2, bBoxHeight / 2);
-  ctx.rotate(rotRad);
-  ctx.scale(flip.horizontal ? -1 : 1, flip.vertical ? -1 : 1);
-  ctx.translate(-image.width / 2, -image.height / 2);
+	// translate canvas context to a central location to allow rotating and flipping around the center
+	ctx.translate(bBoxWidth / 2, bBoxHeight / 2);
+	ctx.rotate(rotRad);
+	ctx.scale(flip.horizontal ? -1 : 1, flip.vertical ? -1 : 1);
+	ctx.translate(-image.width / 2, -image.height / 2);
 
-  // draw rotated image
-  ctx.drawImage(image, 0, 0);
+	// draw rotated image
+	ctx.drawImage(image, 0, 0);
 
-  // croppedAreaPixels values are bounding box relative
-  // extract the cropped image using these values
-  const data = ctx.getImageData(pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height);
+	// croppedAreaPixels values are bounding box relative
+	// extract the cropped image using these values
+	const data = ctx.getImageData(pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height);
 
-  // set canvas width to final desired crop size - this will clear existing context
-  canvas.width = pixelCrop.width;
-  canvas.height = pixelCrop.height;
+	// set canvas width to final desired crop size - this will clear existing context
+	canvas.width = pixelCrop.width;
+	canvas.height = pixelCrop.height;
 
-  // paste generated rotate image at the top left corner
-  ctx.putImageData(data, 0, 0);
+	// paste generated rotate image at the top left corner
+	ctx.putImageData(data, 0, 0);
 
-  // As Base64 string
-  // return canvas.toDataURL('image/jpeg');
+	// As Base64 string
+	// return canvas.toDataURL('image/jpeg');
 
-  // As a blob
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(file => {
-      resolve(file);
-      // resolve(URL.createObjectURL(file));
-    }, 'image/png'); // PNG to preserve transparency
-  });
+	// As a blob
+	return new Promise((resolve, reject) => {
+		canvas.toBlob((file) => {
+			resolve(file);
+			// resolve(URL.createObjectURL(file));
+		}, 'image/png'); // PNG to preserve transparency
+	});
 }

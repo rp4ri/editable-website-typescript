@@ -1,6 +1,6 @@
 export async function load({ locals }) {
-  const currentUser = locals.user;
-  return {
-    currentUser
-  };
+	const currentUser = locals.user;
+	return {
+		currentUser
+	};
 }
