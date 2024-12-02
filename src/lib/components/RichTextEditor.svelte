@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { onMount, onDestroy } from 'svelte';
 	import { toHTML, fromHTML } from '$lib/editor/prosemirrorUtil';
 	import {
@@ -16,35 +18,16 @@
 
 	import type { Transaction } from 'prosemirror-state';
 
-	export let content: string = '<p>Enter text.</p>';
-	export let multiLine: boolean = false;
-	let editorChange = false;
-	let prosemirrorNode: HTMLElement;
-	let editorView: EditorView | undefined;
-	let editorState: EditorState;
-
-	$: schema = multiLine ? multiLineRichTextSchema : singleLineRichTextSchema;
-	$: {
-		const doc = fromHTML(schema, content);
-		editorState = EditorState.create({
-			doc,
-			schema,
-			plugins: [
-				buildInputRules(schema),
-				keymap(buildKeymap(schema)),
-				keymap(baseKeymap),
-				history(),
-				onUpdatePlugin
-			]
-		});
-		// Only if there is already an editorView and the content change was external
-		// update editorView with the new editorState
-		if (!editorChange) {
-			editorView?.updateState(editorState);
-		} else {
-			editorChange = false;
-		}
+	interface Props {
+		content?: string;
+		multiLine?: boolean;
 	}
+
+	let { content = $bindable('<p>Enter text.</p>'), multiLine = false }: Props = $props();
+	let editorChange = $state(false);
+	let prosemirrorNode: HTMLElement = $state();
+	let editorView: EditorView | undefined = $state();
+	let editorState: EditorState = $state();
 
 	function dispatchTransaction(this: EditorView, transaction: Transaction) {
 		const editorState = this.state.apply(transaction);
@@ -79,6 +62,28 @@
 		// Guard on server side
 		if (editorView) {
 			editorView.destroy();
+		}
+	});
+	let schema = $derived(multiLine ? multiLineRichTextSchema : singleLineRichTextSchema);
+	run(() => {
+		const doc = fromHTML(schema, content);
+		editorState = EditorState.create({
+			doc,
+			schema,
+			plugins: [
+				buildInputRules(schema),
+				keymap(buildKeymap(schema)),
+				keymap(baseKeymap),
+				history(),
+				onUpdatePlugin
+			]
+		});
+		// Only if there is already an editorView and the content change was external
+		// update editorView with the new editorState
+		if (!editorChange) {
+			editorView?.updateState(editorState);
+		} else {
+			editorChange = false;
 		}
 	});
 </script>

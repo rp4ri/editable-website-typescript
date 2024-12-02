@@ -1,6 +1,10 @@
 <script lang="ts">
 	import Limiter from '$lib/components/Limiter.svelte';
-	export let form: { incorrect: boolean };
+	interface Props {
+		form: { incorrect: boolean };
+	}
+
+	let { form }: Props = $props();
 </script>
 
 <Limiter>

@@ -5,15 +5,25 @@
 	import uploadAsset from '$lib/uploadAsset';
 	import Cropper from './Cropper.svelte';
 
-	export let src: string;
-	export let alt: string;
-	export let uploadPrompt = undefined;
-	export let maxWidth: number;
-	export let maxHeight: number;
-	export let quality: number;
-	let className = '';
+	interface Props {
+		src: string;
+		alt: string;
+		uploadPrompt?: any;
+		maxWidth: number;
+		maxHeight: number;
+		quality: number;
+		class?: string;
+	}
 
-	export { className as class };
+	let {
+		src = $bindable(),
+		alt,
+		uploadPrompt = undefined,
+		maxWidth,
+		maxHeight,
+		quality,
+		class: className = ''
+	}: Props = $props();
 
 	function onKeyDown(e: KeyboardEvent) {
 		// Trigger save
@@ -24,22 +34,22 @@
 		}
 	}
 
-	let fileInput: HTMLInputElement | null = null; // for uploading an image
+	let fileInput: HTMLInputElement | null = $state(null); // for uploading an image
 	let progress: number | undefined = undefined; // file upload progress
-	let overlayEl: HTMLElement | null = null;
+	let overlayEl: HTMLElement | null = $state(null);
 
 	// Cropper stuff
-	let newSrc: string | undefined;
+	let newSrc: string | undefined = $state();
 	let cropDetail:
 		| {
 				percent: { x: number; y: number; width: number; height: number };
 				pixels: { x: number; y: number; width: number; height: number };
 		  }
-		| undefined;
-	let is_cropping = false;
-	let scale = 1;
-	let crop = { x: 0, y: 0 };
-	let zoom = 1;
+		| undefined = $state();
+	let is_cropping = $state(false);
+	let scale = $state(1);
+	let crop = $state({ x: 0, y: 0 });
+	let zoom = $state(1);
 
 	function cancelCropping() {
 		is_cropping = false;
@@ -131,7 +141,7 @@
 			? 'fixed inset-0 z-40 bg-black bg-opacity-80 p-6 text-center font-bold text-white'
 			: 'hidden'
 	)}
-	on:dblclick={cancelCropping}
+	ondblclick={cancelCropping}
 	aria-hidden={!is_cropping}
 >
 	{#if is_safari()}
@@ -145,10 +155,10 @@
 {#if is_cropping}
 	<div class="fixed bottom-0 left-0 right-0 z-[60] flex space-x-4 p-6">
 		<div class="flex-1"></div>
-		<button class="rounded-full bg-[#EF174C] px-4 py-2 text-white" on:click={uploadImage}
+		<button class="rounded-full bg-[#EF174C] px-4 py-2 text-white" onclick={uploadImage}
 			>Confirm</button
 		>
-		<button class="rounded-full bg-white px-4 py-2 text-black" on:click={cancelCropping}
+		<button class="rounded-full bg-white px-4 py-2 text-black" onclick={cancelCropping}
 			>Cancel</button
 		>
 		<div class="flex-1"></div>
@@ -158,7 +168,7 @@
 <div
 	style={`aspect-ratio: ${maxWidth}/${maxHeight}; scale: ${scale}`}
 	class={classNames(is_cropping ? `z-50` : '', 'relative')}
-	on:dblclick={uploadImage}
+	ondblclick={uploadImage}
 	aria-hidden={!is_cropping}
 >
 	{#if is_cropping && newSrc}
@@ -171,7 +181,7 @@
 		/>
 	{:else}
 		<img
-			on:mousedown={() => fileInput?.click()}
+			onmousedown={() => fileInput?.click()}
 			class={className +
 				' cursor-pointer outline-[2px] -outline-offset-[2px] outline-[#EF174C] hover:outline-dashed'}
 			{src}
@@ -188,7 +198,7 @@
 	accept="image/*"
 	name="imagefile"
 	bind:this={fileInput}
-	on:change={startCropping}
+	onchange={startCropping}
 />
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window onkeydown={onKeyDown} />

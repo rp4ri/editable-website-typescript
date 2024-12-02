@@ -3,11 +3,16 @@
 	import { browser } from '$app/environment';
 	import { classNames } from '$lib/utils';
 
-	// Only relevant for mobile
-	export let position: 'bottom' | 'top' = 'bottom';
+	interface Props {
+		// Only relevant for mobile
+		position?: 'bottom' | 'top';
+		children?: import('svelte').Snippet;
+	}
+
+	let { position = 'bottom', children }: Props = $props();
 
 	const dispatch = createEventDispatcher<{ close: void }>();
-	let surface: HTMLDivElement | null = null;
+	let surface: HTMLDivElement | null = $state(null);
 	onMount(async () => {
 		window.document.children[0].setAttribute('style', 'overflow: hidden;');
 	});
@@ -24,7 +29,7 @@
 <div class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
 	<div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
-	<div class="fixed inset-0 z-50 overflow-y-auto" on:mouseup={onMouseUp} role="presentation">
+	<div class="fixed inset-0 z-50 overflow-y-auto" onmouseup={onMouseUp} role="presentation">
 		<div
 			bind:this={surface}
 			class={classNames(
@@ -35,7 +40,7 @@
 			<div
 				class="relative w-full transform overflow-hidden rounded-lg bg-white text-left shadow-xl sm:my-8 sm:max-w-lg"
 			>
-				<slot />
+				{@render children?.()}
 			</div>
 		</div>
 	</div>

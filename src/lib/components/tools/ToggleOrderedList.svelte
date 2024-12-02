@@ -5,11 +5,16 @@
 	import type { EditorView } from 'prosemirror-view';
 	import type { EditorState } from 'prosemirror-state';
 
-	export let editorView: EditorView;
-	export let editorState: EditorState;
+	interface Props {
+		editorView: EditorView;
+		editorState: EditorState;
+		children?: import('svelte').Snippet;
+	}
 
-	$: schema = editorState.schema;
-	$: disabled = !wrapInList(schema.nodes.ordered_list)(editorView.state);
+	let { editorView, editorState, children }: Props = $props();
+
+	let schema = $derived(editorState.schema);
+	let disabled = $derived(!wrapInList(schema.nodes.ordered_list)(editorView.state));
 
 	function handleClick() {
 		wrapInList(schema.nodes.ordered_list)(editorState, editorView.dispatch);
@@ -18,9 +23,9 @@
 </script>
 
 <button
-	on:click={handleClick}
+	onclick={handleClick}
 	{disabled}
 	class={classNames('rounded-full p-2 hover:bg-gray-100 disabled:opacity-30 sm:mx-1')}
 >
-	<slot />
+	{@render children?.()}
 </button>

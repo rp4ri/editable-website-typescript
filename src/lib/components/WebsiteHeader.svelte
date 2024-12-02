@@ -4,7 +4,12 @@
 	import EditorToolbar from '$lib/components/tools/EditorToolbar.svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	export let showUserMenu: boolean = false;
+	interface Props {
+		showUserMenu?: boolean;
+		children?: import('svelte').Snippet;
+	}
+
+	let { showUserMenu = $bindable(false), children }: Props = $props();
 	const dispatch = createEventDispatcher<{ cancel: void; save: void }>();
 </script>
 
@@ -13,7 +18,7 @@
 {#if showUserMenu}
 	<Modal on:close={() => (showUserMenu = false)}>
 		<div class="flex w-full flex-col space-y-4 p-4 sm:p-6">
-			<slot />
+			{@render children?.()}
 		</div>
 	</Modal>
 {/if}

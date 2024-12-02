@@ -15,8 +15,8 @@
 	import type { EditorView } from 'prosemirror-view';
 	import type { EditorState } from 'prosemirror-state';
 
-	let editorView: EditorView | null = null;
-	let editorState: EditorState | null = null;
+	let editorView: EditorView | null = $state(null);
+	let editorState: EditorState | null = $state(null);
 
 	const unsubscribe = activeEditorView.subscribe((value) => {
 		editorView = value;
@@ -164,4 +164,4 @@
 	</div>
 </div>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window onkeydown={onKeyDown} />

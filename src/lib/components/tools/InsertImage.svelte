@@ -6,14 +6,19 @@
 	import type { EditorView } from 'prosemirror-view';
 	import type { EditorState } from 'prosemirror-state';
 
-	export let editorView: EditorView;
-	export let editorState: EditorState;
+	interface Props {
+		editorView: EditorView;
+		editorState: EditorState;
+		children?: import('svelte').Snippet;
+	}
 
-	let fileInput: HTMLInputElement | null = null; // for uploading an image
-	let progress: number | undefined = undefined; // file upload progress
+	let { editorView, editorState, children }: Props = $props();
 
-	$: schema = editorState.schema;
-	$: disabled = !insertImage(editorState);
+	let fileInput: HTMLInputElement | null = $state(null); // for uploading an image
+	let progress: number | undefined = $state(undefined); // file upload progress
+
+	let schema = $derived(editorState.schema);
+	let disabled = $derived(!insertImage(editorState));
 
 	async function uploadImage(): Promise<void> {
 		if (!fileInput) return;
@@ -83,13 +88,13 @@
 	name="imagefile"
 	multiple
 	bind:this={fileInput}
-	on:change={uploadImage}
+	onchange={uploadImage}
 />
 <button
-	on:click={handleClick}
+	onclick={handleClick}
 	{disabled}
 	class={classNames('rounded-full p-2 hover:bg-gray-100 disabled:opacity-30 sm:mx-1')}
 >
-	<slot />
+	{@render children?.()}
 	{progress || ''}
 </button>

@@ -6,16 +6,21 @@
 	import type { EditorView } from 'prosemirror-view';
 	import type { EditorState } from 'prosemirror-state';
 
-	export let editorView: EditorView;
-	export let editorState: EditorState;
-	export let type;
+	interface Props {
+		editorView: EditorView;
+		editorState: EditorState;
+		type: any;
+		children?: import('svelte').Snippet;
+	}
 
-	$: schema = editorState.schema;
-	$: markType = schema.marks[type];
+	let { editorView, editorState, type, children }: Props = $props();
 
-	$: command = toggleMark(markType);
-	$: disabled = !markType || !command(editorState, undefined);
-	$: active = markActive(markType)(editorState);
+	let schema = $derived(editorState.schema);
+	let markType = $derived(schema.marks[type]);
+
+	let command = $derived(toggleMark(markType));
+	let disabled = $derived(!markType || !command(editorState, undefined));
+	let active = $derived(markActive(markType)(editorState));
 
 	function handleClick() {
 		command(editorState, editorView.dispatch, editorView);
@@ -24,12 +29,12 @@
 </script>
 
 <button
-	on:click={handleClick}
+	onclick={handleClick}
 	{disabled}
 	class={classNames(
 		active ? 'bg-gray-900 text-white' : 'hover:bg-gray-100',
 		'rounded-full p-2 disabled:opacity-30 sm:mx-1'
 	)}
 >
-	<slot />
+	{@render children?.()}
 </button>

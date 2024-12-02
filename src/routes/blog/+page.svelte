@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { classNames } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import PrimaryButton from '$lib/components/PrimaryButton.svelte';
@@ -10,11 +12,11 @@
 	import { currentUser } from '$lib/stores.js';
 	import WebsiteHeader from '$lib/components/WebsiteHeader.svelte';
 
-	export let data;
-	let showUserMenu: boolean;
-	$: {
+	let { data } = $props();
+	let showUserMenu: boolean = $state(false);
+	run(() => {
 		$currentUser = data.currentUser;
-	}
+	});
 </script>
 
 <svelte:head>

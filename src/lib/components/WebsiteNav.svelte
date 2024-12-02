@@ -5,9 +5,13 @@
 	import Search from '$lib/components/Search.svelte';
 	import { isEditing, currentUser } from '$lib/stores';
 
-	// TODO: Replace with a globally managed context menu implementation (only one active)
-	export let showUserMenu: boolean | undefined = undefined;
-	export let showSearch: boolean | undefined = undefined;
+	interface Props {
+		// TODO: Replace with a globally managed context menu implementation (only one active)
+		showUserMenu?: boolean | undefined;
+		showSearch?: boolean | undefined;
+	}
+
+	let { showUserMenu = $bindable(undefined), showSearch = $bindable(undefined) }: Props = $props();
 
 	function onKeyDown(e: KeyboardEvent): void {
 		// Close modals
@@ -46,7 +50,7 @@
 				<button
 					title="Search"
 					class={classNames('mr-6 hover:text-black')}
-					on:click={() => (showSearch = true)}
+					onclick={() => (showSearch = true)}
 					aria-label="Search"
 				>
 					<svg
@@ -72,7 +76,7 @@
 				<div class="flex-1"></div>
 				{#if $currentUser}
 					<button
-						on:click={() => (showUserMenu = !showUserMenu)}
+						onclick={() => (showUserMenu = !showUserMenu)}
 						class="ml-0 hover:text-black"
 						title={$currentUser.name}
 						aria-label="User menu"
@@ -99,4 +103,4 @@
 	</div>
 </div>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window onkeydown={onKeyDown} />

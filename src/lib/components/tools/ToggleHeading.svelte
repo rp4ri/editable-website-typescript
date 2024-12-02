@@ -6,14 +6,20 @@
 	import type { EditorView } from 'prosemirror-view';
 	import type { EditorState } from 'prosemirror-state';
 
-	export let editorView: EditorView;
-	export let editorState: EditorState;
+	interface Props {
+		editorView: EditorView;
+		editorState: EditorState;
+		children?: import('svelte').Snippet;
+	}
 
-	$: schema = editorState.schema;
-	$: disabled =
+	let { editorView, editorState, children }: Props = $props();
+
+	let schema = $derived(editorState.schema);
+	let disabled = $derived(
 		!setBlockType(schema.nodes.heading)(editorState) &&
-		!setBlockType(schema.nodes.paragraph)(editorState);
-	$: active = blockTypeActive(schema.nodes.heading, { level: 1 })(editorState);
+			!setBlockType(schema.nodes.paragraph)(editorState)
+	);
+	let active = $derived(blockTypeActive(schema.nodes.heading, { level: 1 })(editorState));
 
 	function handleClick() {
 		if (active) {
@@ -26,12 +32,12 @@
 </script>
 
 <button
-	on:click={handleClick}
+	onclick={handleClick}
 	{disabled}
 	class={classNames(
 		active ? 'bg-gray-900 text-white' : 'hover:bg-gray-100',
 		'rounded-full p-2 disabled:opacity-30 sm:mx-1'
 	)}
 >
-	<slot />
+	{@render children?.()}
 </button>

@@ -4,19 +4,21 @@
 	import { SHORTCUTS } from '$lib/constants';
 	import { goto } from '$app/navigation';
 
-	export let showSearch;
-	let value: string;
-	let result = SHORTCUTS;
-	let selectedResult = 0;
-	let input: HTMLInputElement;
-	let resultsEl: HTMLElement;
+	let { showSearch = $bindable() } = $props();
+	let value: string = $state('');
+	let result = $state(SHORTCUTS);
+	let selectedResult = $state(0);
+	let input: HTMLInputElement | undefined = $state();
+	let resultsEl: HTMLElement | undefined = $state();
 
 	interface HTMLElementWithScrollIntoViewIfNeeded extends HTMLElement {
 		scrollIntoViewIfNeeded(): void;
 	}
 
 	onMount(() => {
-		input.focus();
+		if (input) {
+			input.focus();
+		}
 	});
 
 	async function search() {
@@ -107,7 +109,7 @@
 	/>
 	<button
 		class="rounded-md bg-gray-100 px-4 py-2 text-xs font-bold text-gray-600 hover:text-gray-900"
-		on:click={() => (showSearch = false)}>ESC</button
+		onclick={() => (showSearch = false)}>ESC</button
 	>
 </div>
 
@@ -119,7 +121,7 @@
 <div class="overflow-y-auto" bind:this={resultsEl}>
 	{#each result as item, i}
 		<a
-			on:click={() => (showSearch = false)}
+			onclick={() => (showSearch = false)}
 			class={classNames(
 				'block border-b border-gray-100 px-4 py-3 text-gray-600 hover:text-black sm:px-6',
 				selectedResult === i ? 'bg-gray-100' : ''
@@ -129,4 +131,4 @@
 	{/each}
 </div>
 
-<svelte:window on:keydown={onKeyDown} />
+<svelte:window onkeydown={onKeyDown} />

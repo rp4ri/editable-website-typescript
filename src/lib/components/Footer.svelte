@@ -3,8 +3,12 @@
 	import { fetchJSON } from '$lib/utils';
 	import NotEditable from '$lib/components/NotEditable.svelte';
 
-	export let counter: string | undefined;
-	let count: number | undefined;
+	interface Props {
+		counter: string | undefined;
+	}
+
+	let { counter }: Props = $props();
+	let count: number | undefined = $state();
 
 	onMount(async () => {
 		if (counter) {

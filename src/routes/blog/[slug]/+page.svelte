@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { classNames, extractTeaser, fetchJSON, formatDate } from '$lib/utils';
 	import PrimaryButton from '$lib/components/PrimaryButton.svelte';
 	import WebsiteNav from '$lib/components/WebsiteNav.svelte';
@@ -18,15 +20,14 @@
 
 	import SecondaryButton from '$lib/components/SecondaryButton.svelte';
 
-	export let data;
+	let { data } = $props();
 
-	let showUserMenu = false;
-	let title: string, teaser: string, content: string, published_at: string, updatedAt: string;
-
-	$: {
-		$currentUser = data.currentUser;
-		initOrReset();
-	}
+	let showUserMenu = $state(false);
+	let title: string = $state('');
+	let teaser: string = $state('');
+	let content: string = $state('');
+	let published_at: string = $state('');
+	let updatedAt: string = $state('');
 
 	function initOrReset() {
 		title = data.title;
@@ -74,6 +75,10 @@
 			);
 		}
 	}
+	run(() => {
+		$currentUser = data.currentUser;
+		initOrReset();
+	});
 </script>
 
 <svelte:head>

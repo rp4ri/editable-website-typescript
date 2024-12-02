@@ -10,11 +10,15 @@
 
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	let showUserMenu: boolean = false;
-	let title: string;
-	let imprint: string;
+	let { data }: Props = $props();
+
+	let showUserMenu: boolean = $state(false);
+	let title: string = $state('');
+	let imprint: string = $state('');
 
 	// --------------------------------------------------------------------------
 	// DEFAULT PAGE CONTENT - ADJUST TO YOUR NEEDS

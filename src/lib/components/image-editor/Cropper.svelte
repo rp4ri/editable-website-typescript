@@ -1,28 +1,47 @@
 <script lang="ts">
+	import { run, preventDefault } from 'svelte/legacy';
+
 	// Adopted from:
 	// https://github.com/ValentinH/svelte-easy-crop/blob/main/src/lib/Cropper.svelte
 	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 
 	import * as helpers from '$lib/cropperUtil';
 
-	export let image: string;
-	export let crop: { x: number; y: number } = { x: 0, y: 0 };
-	export let zoom: number = 1;
-	export let aspect: number = 4 / 3;
-	export let minZoom: number = 1;
-	export let maxZoom: number = 3;
-	export let cropSize: { width: number; height: number } | null = null;
-	export let cropShape: 'rect' | 'cr-round' = 'rect';
-	export let showGrid: boolean = true;
-	export let zoomSpeed: number = 1;
-	export let crossOrigin: '' | 'anonymous' | 'use-credentials' | null = null;
-	export let restrictPosition: boolean = true;
+	interface Props {
+		image: string;
+		crop?: { x: number; y: number };
+		zoom?: number;
+		aspect?: number;
+		minZoom?: number;
+		maxZoom?: number;
+		cropSize?: { width: number; height: number } | null;
+		cropShape?: 'rect' | 'cr-round';
+		showGrid?: boolean;
+		zoomSpeed?: number;
+		crossOrigin?: '' | 'anonymous' | 'use-credentials' | null;
+		restrictPosition?: boolean;
+	}
 
-	let cropperSize: { width: number; height: number } | null = null;
+	let {
+		image,
+		crop = $bindable({ x: 0, y: 0 }),
+		zoom = $bindable(1),
+		aspect = 4 / 3,
+		minZoom = 1,
+		maxZoom = 3,
+		cropSize = null,
+		cropShape = 'rect',
+		showGrid = true,
+		zoomSpeed = 1,
+		crossOrigin = null,
+		restrictPosition = true
+	}: Props = $props();
+
+	let cropperSize: { width: number; height: number } | null = $state(null);
 	let imageSize = { width: 0, height: 0, naturalWidth: 0, naturalHeight: 0 };
-	let containerEl: HTMLElement | null = null;
+	let containerEl: HTMLElement | null = $state(null);
 	let containerRect: DOMRect | null = null;
-	let imgEl: HTMLImageElement | null = null;
+	let imgEl: HTMLImageElement | null = $state(null);
 	let dragStartPosition = { x: 0, y: 0 };
 	let dragStartCrop = { x: 0, y: 0 };
 	let lastPinchDistance = 0;
@@ -237,21 +256,25 @@
 
 	// ------ Reactive statement ------
 	//when aspect changes, we reset the cropperSize
-	$: if (imgEl) {
-		cropperSize = cropSize ? cropSize : helpers.getCropSize(imgEl.width, imgEl.height, aspect);
-	}
+	run(() => {
+		if (imgEl) {
+			cropperSize = cropSize ? cropSize : helpers.getCropSize(imgEl.width, imgEl.height, aspect);
+		}
+	});
 
 	// when zoom changes, we recompute the cropped area
-	$: zoom && emitCropData();
+	run(() => {
+		zoom && emitCropData();
+	});
 </script>
 
-<svelte:window on:resize={computeSizes} />
+<svelte:window onresize={computeSizes} />
 <div
 	class="cr-container"
 	bind:this={containerEl}
-	on:mousedown|preventDefault={onMouseDown}
-	on:touchstart|preventDefault={onTouchStart}
-	on:wheel|preventDefault={onWheel}
+	onmousedown={preventDefault(onMouseDown)}
+	ontouchstart={preventDefault(onTouchStart)}
+	onwheel={preventDefault(onWheel)}
 	data-testid="cr-container"
 	aria-hidden={true}
 >
@@ -259,7 +282,7 @@
 		bind:this={imgEl}
 		class="cr-image"
 		src={image}
-		on:load={onImgLoad}
+		onload={onImgLoad}
 		alt=""
 		style="transform: translate({crop.x}px, {crop.y}px) scale({zoom});"
 		crossorigin={crossOrigin}

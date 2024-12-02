@@ -1,8 +1,12 @@
 <script lang="ts">
 	import { isEditing } from '$lib/stores';
 
-	export let content: string;
-	export let multiLine = false;
+	interface Props {
+		content: string;
+		multiLine?: boolean;
+	}
+
+	let { content = $bindable(), multiLine = false }: Props = $props();
 </script>
 
 {#if $isEditing}

@@ -16,7 +16,7 @@
 
 	import type { HomeData, IntroStepData, TestimonialData, Article } from '$lib/types/home';
 
-	export let data;
+	let { data } = $props();
 
 	// --------------------------------------------------------------------------
 	// DEFAULT PAGE CONTENT - AJDUST TO YOUR NEEDS
@@ -47,17 +47,33 @@
 		}
 	];
 
-	let title: string,
-		testimonials: TestimonialData[],
-		faqs: string,
-		introStep1: IntroStepData,
-		introStep2: IntroStepData,
-		introStep3: IntroStepData,
-		introStep4: IntroStepData,
-		bioTitle: string,
-		bioPicture: string,
-		bio: string,
-		showUserMenu: boolean = false;
+	let title: string = $state(''),
+		testimonials: TestimonialData[] = $state([]),
+		faqs: string = $state(''),
+		introStep1: IntroStepData = $state({
+			label: '',
+			title: '',
+			description: ''
+		}),
+		introStep2: IntroStepData = $state({
+			label: '',
+			title: '',
+			description: ''
+		}),
+		introStep3: IntroStepData = $state({
+			label: '',
+			title: '',
+			description: ''
+		}),
+		introStep4: IntroStepData = $state({
+			label: '',
+			title: '',
+			description: ''
+		}),
+		bioTitle: string = $state(''),
+		bioPicture: string = $state(''),
+		bio: string = $state(''),
+		showUserMenu: boolean = $state(false);
 
 	function initOrReset(): void {
 		$currentUser = data.currentUser;
@@ -264,9 +280,9 @@
 	<div class="mx-auto max-w-screen-md px-6">
 		<div class="py-12 pb-8 text-sm font-bold sm:pt-24 sm:text-base">WHAT PEOPLE SAY</div>
 	</div>
-	{#each testimonials as testimonial, i}
+	{#each testimonials as _, i}
 		<Testimonial
-			bind:testimonial
+			bind:testimonial={testimonials[i]}
 			firstEntry={i === 0}
 			lastEntry={i === testimonials.length - 1}
 			on:delete={() => deleteTestimonial(i)}

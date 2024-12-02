@@ -1,15 +1,26 @@
 <script lang="ts">
 	import { isEditing } from '$lib/stores';
 
-	export let src: string;
-	export let alt: string;
-	export let uploadPrompt = undefined;
-	export let maxWidth: number;
-	export let maxHeight: number;
-	export let quality: number;
-	let className = '';
+	interface Props {
+		src: string;
+		alt: string;
+		uploadPrompt?: any;
+		maxWidth: number;
+		maxHeight: number;
+		quality: number;
+		class?: string;
+	}
+
+	let {
+		src = $bindable(),
+		alt,
+		uploadPrompt = undefined,
+		maxWidth,
+		maxHeight,
+		quality,
+		class: className = ''
+	}: Props = $props();
 	let previewSrc: string | undefined;
-	export { className as class };
 </script>
 
 {#if $isEditing}

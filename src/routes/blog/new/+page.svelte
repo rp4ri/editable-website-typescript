@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { extractTeaser, fetchJSON, formatDate } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import Footer from '$lib/components/Footer.svelte';
@@ -11,18 +13,18 @@
 	import PlainText from '$lib/components/PlainText.svelte';
 	import RichText from '$lib/components/RichText.svelte';
 
-	export let data;
+	let { data } = $props();
 
 	let published_at: string | undefined = undefined;
 
-	let showUserMenu = false,
-		title = 'Untitled',
-		content = 'Copy and paste your text here.';
+	let showUserMenu = $state(false),
+		title = $state('Untitled'),
+		content = $state('Copy and paste your text here.');
 
-	$: {
+	run(() => {
 		$currentUser = data.currentUser;
 		$isEditing = true;
-	}
+	});
 
 	async function createArticle() {
 		if (!$currentUser) {

@@ -1,11 +1,23 @@
 <script lang="ts">
-	export let value = '';
-	export let id;
-	export let type = 'text';
-	export let name;
-	export let required = false;
-	export let inputRef = null;
-	export let placeholder = '';
+	interface Props {
+		value?: string;
+		id: any;
+		type?: string;
+		name: any;
+		required?: boolean;
+		inputRef?: any;
+		placeholder?: string;
+	}
+
+	let {
+		value = $bindable(''),
+		id,
+		type = 'text',
+		name,
+		required = false,
+		inputRef = $bindable(null),
+		placeholder = ''
+	}: Props = $props();
 	function setType(node: HTMLInputElement) {
 		node.type = type;
 	}

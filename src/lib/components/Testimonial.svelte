@@ -9,9 +9,13 @@
 
 	const dispatch = createEventDispatcher();
 
-	export let testimonial;
-	export let firstEntry = false;
-	export let lastEntry = false;
+	interface Props {
+		testimonial: any;
+		firstEntry?: boolean;
+		lastEntry?: boolean;
+	}
+
+	let { testimonial = $bindable(), firstEntry = false, lastEntry = false }: Props = $props();
 </script>
 
 <div class={classNames(firstEntry ? 'pb-8 pt-2 sm:pb-12' : 'py-8 sm:py-12')}>
@@ -38,7 +42,7 @@
 			<div class="flex flex-col space-y-2">
 				<button
 					class="h-6 w-6 rounded-full bg-gray-900 p-1 text-white hover:bg-gray-800"
-					on:click={() => dispatch('delete')}
+					onclick={() => dispatch('delete')}
 					aria-label="Delete"
 				>
 					<svg
@@ -57,7 +61,7 @@
 						'h-6 w-6 rounded-full p-1 hover:bg-gray-100',
 						firstEntry ? 'opacity-20' : ''
 					)}
-					on:click={() => dispatch('up')}
+					onclick={() => dispatch('up')}
 					aria-label="Move up"
 				>
 					<svg
@@ -76,7 +80,7 @@
 						'h-6 w-6 rounded-full p-1 hover:bg-gray-100',
 						lastEntry ? 'opacity-20' : ''
 					)}
-					on:click={() => dispatch('down')}
+					onclick={() => dispatch('down')}
 					aria-label="Move down"
 				>
 					<svg
